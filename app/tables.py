@@ -1,7 +1,3 @@
-import asyncio
-
-import converter
-
 ISV_TABLE = '''
 А а - Ⰰ ⰰ
 Б б - Ⰱ ⰱ
@@ -74,14 +70,3 @@ CYR_TABLE = '''
 Я я - Ⱔ ⱔ
 ' ’ - ⱏ ⱏ
 '''
-
-cyr_to_glag = converter.build_converter(CYR_TABLE)
-isv_to_glag = converter.build_converter(ISV_TABLE)
-
-
-async def main():
-    pass
-
-
-if __name__ == '__main__':
-    asyncio.run(main())
