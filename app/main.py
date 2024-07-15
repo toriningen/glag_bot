@@ -23,7 +23,7 @@ def make_bot(table: str) -> TelegramClient:
 
     @bot.on(events.NewMessage())
     async def on_new_message(event):
-        await event.reply(to_glag(event.message))
+        await event.reply(to_glag(event.raw_text))
 
     return bot
 
