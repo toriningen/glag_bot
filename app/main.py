@@ -25,14 +25,14 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.NewMessage(incoming=True, pattern=r'^/start'))
     async def on_start(event):
-        logger.debug(f'Start message', extra={"event": event.to_json()})
+        logger.debug(f'Start message', event=event.to_json())
 
         await event.reply(to_glag('Добродошли!'))
         raise events.StopPropagation()
 
     @bot.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
-        logger.debug(f'New message', extra={"event": event.to_json()})
+        logger.debug(f'New message', event=event.to_json())
 
         orig_text = event.raw_text
         glag_text = to_glag(orig_text)
@@ -44,7 +44,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
-        logger.debug(f'Inline query', extra={"event": event.to_json()})
+        logger.debug(f'Inline query', event=event.to_json())
 
         orig_text = event.text
         glag_text = to_glag(orig_text)

@@ -2,32 +2,22 @@ import logging
 
 from app.config import LOG_LEVEL
 
-logging.basicConfig(
-    level=logging.getLevelName(LOG_LEVEL),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s | %(event)s",
+stream_handler = logging.StreamHandler()
+
+formatter = logging.Formatter(
+    fmt="%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s | %(event)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.StreamHandler()
-    ],
+    defaults={"event": ""}
 )
 
+stream_handler.setFormatter(formatter)
 
-def update_log_record_factory():
-    old_factory = logging.getLogRecordFactory()
-
-    def record_factory(*args, **kwargs):
-        record = old_factory(*args, **kwargs)
-        record.event = ""
-        return record
-
-    logging.setLogRecordFactory(record_factory)
-
-
-update_log_record_factory()
+logging.basicConfig(
+    level=logging.getLevelName(LOG_LEVEL),
+    handlers=[stream_handler],
+)
 
 telethon_logger = logging.getLogger('telethon')
 telethon_logger.setLevel(logging.INFO)
 
-
-def get_logger(*args, **kwargs):
-    return logging.getLogger(*args, **kwargs)
+get_logger = logging.getLogger
