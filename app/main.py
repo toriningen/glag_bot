@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import List
 
@@ -6,22 +5,11 @@ from telethon import TelegramClient, events
 
 from .config import *
 from .converter import build_converter
+from .logging import get_logger
 from .tables import *
 from .text_util import split_long_text
 
-logging.basicConfig(
-    level=logging.getLevelName(LOG_LEVEL),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s | %(event)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.StreamHandler()
-    ],
-)
-
-telethon_logger = logging.getLogger('telethon')
-telethon_logger.setLevel(logging.INFO)
-
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def ellipsis_truncate(text: str, max_len: int) -> str:
@@ -37,14 +25,14 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.NewMessage(incoming=True, pattern=r'^/start'))
     async def on_start(event):
-        logger.debug(f'Start message', extra={"event": event.to_dict()})
+        logger.debug(f'Start message', extra={"event": event.to_json()})
 
         await event.reply(to_glag('Добродошли!'))
         raise events.StopPropagation()
 
     @bot.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
-        logger.debug(f'New message', extra={"event": event.to_dict()})
+        logger.debug(f'New message', extra={"event": event.to_json()})
 
         orig_text = event.raw_text
         glag_text = to_glag(orig_text)
@@ -56,8 +44,8 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
-        logger.debug(f'Inline query', extra={"event": event.to_dict()})
-        
+        logger.debug(f'Inline query', extra={"event": event.to_json()})
+
         orig_text = event.text
         glag_text = to_glag(orig_text)
 
