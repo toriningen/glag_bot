@@ -50,7 +50,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
         logger.debug(f'New message', extra=log_event(event))
 
         orig_text = event.raw_text
-        langs = converter.detect(orig_text)
+        langs = converter.detect_lang(orig_text)
         if len(langs) == 1:
             lang, = langs
             glag_text = converter.convert(lang, orig_text)
