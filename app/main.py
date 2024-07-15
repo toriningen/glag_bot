@@ -1,13 +1,13 @@
 import logging
-import re
 from pathlib import Path
-from typing import List, Iterator
+from typing import List
 
 from telethon import TelegramClient, events
 
 from .config import *
 from .converter import build_converter
 from .tables import *
+from .text_util import split_long_text
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,34 +26,6 @@ def ellipsis_truncate(text: str, max_len: int) -> str:
         return f'{text[:max_len - 3]}...'
 
     return text
-
-
-def split_long_text(text: str, max_len: int = 4096) -> Iterator[str]:
-    """Attempt to split text into chunks, so that every chunk is not longer than max_len.
-
-    First try to split by double line breaks, then by single line breaks, then by sentence breaks, then by whitespace,
-    and if everything else failed, by codepoints.
-    """
-
-    matchers = [
-        re.compile(r'(.*)\n\n.*?$', re.DOTALL),
-        re.compile(r'(.*)\n.*?$', re.DOTALL),
-        re.compile(r'(.*[.?!]+)\s+.*?$', re.DOTALL),
-        re.compile(r'(.*)\s+.*?$', re.DOTALL),
-    ]
-
-    text = text.strip()
-    while text:
-        chunk = text[:max_len].rstrip()
-
-        for matcher in matchers:
-            rxm = matcher.match(chunk)
-            if rxm:
-                chunk = rxm.group(1)
-                break
-
-        yield chunk
-        text = text[len(chunk):]
 
 
 def make_bot(session: str, tables: List[str]) -> TelegramClient:
