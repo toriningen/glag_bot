@@ -11,9 +11,23 @@ logging.basicConfig(
     ],
 )
 
+
+def update_log_record_factory():
+    old_factory = logging.getLogRecordFactory()
+
+    def record_factory(*args, **kwargs):
+        record = old_factory(*args, **kwargs)
+        record.event = ""
+        return record
+
+    logging.setLogRecordFactory(record_factory)
+
+
+update_log_record_factory()
+
 telethon_logger = logging.getLogger('telethon')
 telethon_logger.setLevel(logging.INFO)
 
 
 def get_logger(*args, **kwargs):
-    return logging.LoggerAdapter(logging.getLogger(*args, **kwargs), {'event': ''})
+    return logging.getLogger(*args, **kwargs)
