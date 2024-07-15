@@ -48,15 +48,6 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
         if not glag_text:
             return await event.answer([])
 
-        if len(orig_text) > 270:
-            return await event.answer([
-                event.builder.article(
-                    title='Ой вей, станеться обрізання',
-                    description='Не більше 270 знаків',
-                    text=glag_text,
-                )
-            ])
-
         if len(glag_text) > 4096:
             return await event.answer([
                 event.builder.article(
@@ -66,10 +57,14 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
                 )
             ])
 
+        hint = ''
+        if len(orig_text) == 255:
+            hint = '(⚠️ можливо, текст занадто довгий - обмеження в 270 знаків) '
+
         return await event.answer([
             event.builder.article(
                 title=f'({len(orig_text)} | {len(glag_text)}) {round_up(glag_text, 100)}',
-                description="відправити транслітерацію в чат",
+                description=f"{hint}відправити транслітерацію в чат",
                 text=glag_text,
             )
         ])
