@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def make_bot(token: str, table: str) -> TelegramClient:
     to_glag = build_converter(table)
-    bot = TelegramClient('bot', api_id=API_ID, api_hash=API_HASH).start(bot_token=token)
+    bot = await TelegramClient('bot', api_id=API_ID, api_hash=API_HASH).start(bot_token=token)
 
     @bot.on(events.NewMessage())
     async def on_new_message(event):
