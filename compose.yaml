@@ -4,3 +4,8 @@ services:
   bot:
     build: .
     env_file: .env
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: sessions
+        target: /var/run/sessions

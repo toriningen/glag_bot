@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import List
 
 from telethon import TelegramClient, events
@@ -19,9 +20,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def make_bot(tables: List[str]) -> TelegramClient:
+def make_bot(session: str, tables: List[str]) -> TelegramClient:
     to_glag = build_converter(tables)
-    bot = TelegramClient('bot', api_id=API_ID, api_hash=API_HASH)
+    bot = TelegramClient(session, api_id=API_ID, api_hash=API_HASH)
 
     @bot.on(events.NewMessage(incoming=True, pattern=r'^/start'))
     async def on_start(event):
@@ -46,6 +47,9 @@ def make_bot(tables: List[str]) -> TelegramClient:
 async def main():
     logger.info("Starting bot...")
 
-    bot = make_bot([CYR_TABLE, ISV_TABLE])
+    session_root = Path('/var/run/sessions/')
+    session_root.mkdir(exist_ok=True)
+
+    bot = make_bot(str(session_root / 'to_glag_bot'), [CYR_TABLE, ISV_TABLE])
     await bot.start(bot_token=BOT_TOKEN)
     await bot.run_until_disconnected()
