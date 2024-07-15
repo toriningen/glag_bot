@@ -1,4 +1,5 @@
 import logging
+import re
 from pathlib import Path
 from typing import List, Iterator
 
@@ -28,34 +29,31 @@ def ellipsis_truncate(text: str, max_len: int) -> str:
 
 
 def split_long_text(text: str, max_len: int = 4096) -> Iterator[str]:
-    """Attempt to split text, so that every chunk is not more than max_len.
+    """Attempt to split text into chunks, so that every chunk is not longer than max_len.
 
     First try to split by double line breaks, then by single line breaks, then by sentence breaks, then by whitespace,
-    then by codepoints.
+    and if everything else failed, by codepoints.
     """
 
-    splitters = [
-        '\n\n',
-        '\n',
-        '. ',
-        ' ',
+    matchers = [
+        re.compile(r'(.*)\n\n.*?$', re.DOTALL),
+        re.compile(r'(.*)\n.*?$', re.DOTALL),
+        re.compile(r'(.*[.?!]+)\s+.*?$', re.DOTALL),
+        re.compile(r'(.*)\s+.*?$', re.DOTALL),
     ]
 
+    text = text.strip()
     while text:
-        for splitter in splitters:
-            splitpoint = text.rfind(splitter, 0, max_len)
+        chunk = text[:max_len].rstrip()
 
-            if splitpoint != -1:
-                splitpoint += len(splitter)
+        for matcher in matchers:
+            rxm = matcher.match(chunk)
+            if rxm:
+                chunk = rxm.group(1)
                 break
-        else:
-            splitpoint = max_len
 
-        chunk = text[:splitpoint]
-        chunk = chunk.strip()
-        if chunk:
-            yield chunk
-        text = text[splitpoint:]
+        yield chunk
+        text = text[len(chunk):]
 
 
 def make_bot(session: str, tables: List[str]) -> TelegramClient:
