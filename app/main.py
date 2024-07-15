@@ -17,9 +17,9 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-def make_bot(token: str, table: str) -> TelegramClient:
+def make_bot(table: str) -> TelegramClient:
     to_glag = build_converter(table)
-    bot = await TelegramClient('bot', api_id=API_ID, api_hash=API_HASH).start(bot_token=token)
+    bot = TelegramClient('bot', api_id=API_ID, api_hash=API_HASH)
 
     @bot.on(events.NewMessage())
     async def on_new_message(event):
@@ -31,7 +31,6 @@ def make_bot(token: str, table: str) -> TelegramClient:
 async def main():
     logger.info("Starting bot...")
 
-    # cyr_bot = make_bot(CYR_BOT_TOKEN, CYR_TABLE)
-    # isv_bot = make_bot(ISV_BOT_TOKEN, ISV_TABLE)
-    bot = make_bot(BOT_TOKEN, '\n'.join([CYR_TABLE, ISV_TABLE]))
-    bot.run_until_disconnected()
+    bot = make_bot('\n'.join([CYR_TABLE, ISV_TABLE]))
+    await bot.start(bot_token=BOT_TOKEN)
+    await bot.run_until_disconnected()
