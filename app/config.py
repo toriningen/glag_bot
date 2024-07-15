@@ -6,3 +6,4 @@ API_HASH = os.environ.get('API_HASH')
 # ISV_BOT_TOKEN = os.environ.get('ISV_BOT_TOKEN')
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
+CACHE_TIME = 60

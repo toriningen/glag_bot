@@ -48,7 +48,8 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
-        logger.debug(f'Inline query', extra=log_event(event))
+        print(event, dir(event), event.__dict__)
+        logger.debug(f'Inline query') #, extra=log_event(event))
 
         orig_text = event.text
         glag_text = to_glag(orig_text)
@@ -62,11 +63,11 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
         return await event.answer([
             event.builder.article(
-                title=f'({len(orig_text)} | {len(glag_text)}) {ellipsis_truncate(glag_text, 100)}',
+                title=f'{ellipsis_truncate(glag_text, 100)}',
                 description=f"{hint}",
                 text=glag_text,
             )
-        ])
+        ], cache_time=CACHE_TIME)
 
     return bot
 
