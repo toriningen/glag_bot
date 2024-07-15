@@ -9,6 +9,12 @@ services:
       - type: volume
         source: sessions
         target: /var/run/sessions
+    logging:
+      driver: local
+      options:
+        max-size: 100m
+        max-file: 1000
+        compress: true
 
 volumes:
   sessions:
