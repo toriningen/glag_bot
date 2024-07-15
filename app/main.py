@@ -27,6 +27,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
     @bot.on(events.NewMessage(incoming=True, pattern=r'^/start'))
     async def on_start(event):
         await event.reply('Добродошли!')
+        raise events.StopPropagation()
 
     @bot.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
@@ -43,6 +44,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
         ])
 
     return bot
+
 
 async def main():
     logger.info("Starting bot...")
