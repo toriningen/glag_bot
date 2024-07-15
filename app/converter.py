@@ -1,5 +1,6 @@
 import re
 
+
 def build_converter(table: str):
     lines = table.split('\n')
     rules = []
