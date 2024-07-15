@@ -28,27 +28,34 @@ def ellipsis_truncate(text: str, max_len: int) -> str:
 
 
 def split_long_text(text: str, max_len: int = 4096) -> Iterator[str]:
-    """Attempt to split text by line breaks, so that every chunk is not more than max_len.
+    """Attempt to split text, so that every chunk is not more than max_len.
 
-    If the split cannot be done by line breaks, then split by whitespace.
+    First try to split by double line breaks, then by single line breaks, then by sentence breaks, then by whitespace,
+    then by codepoints.
+    """
 
-    If cannot be done either, split by codepoints."""
+    splitters = [
+        '\n\n',
+        '\n',
+        '. ',
+        ' ',
+    ]
 
     while text:
-        closest_lf = text.rfind('\n', 0, max_len)
-        if closest_lf != -1:
-            yield text[:closest_lf]
-            text = text[closest_lf:]
-            continue
+        for splitter in splitters:
+            splitpoint = text.rfind(splitter, 0, max_len)
 
-        closest_whitespace = text.rfind(' ', 0, max_len)
-        if closest_whitespace != -1:
-            yield text[:closest_whitespace]
-            text = text[closest_whitespace:]
-            continue
+            if splitpoint != -1:
+                splitpoint += len(splitter)
+                break
+        else:
+            splitpoint = max_len
 
-        yield text[:max_len]
-        text = text[max_len:]
+        chunk = text[:splitpoint]
+        chunk = chunk.strip()
+        if chunk:
+            yield chunk
+        text = text[splitpoint:]
 
 
 def make_bot(session: str, tables: List[str]) -> TelegramClient:
@@ -57,7 +64,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.NewMessage(incoming=True, pattern=r'^/start'))
     async def on_start(event):
-        await event.reply('Добродошли!')
+        await event.reply(to_glag('Добродошли!'))
         raise events.StopPropagation()
 
     @bot.on(events.NewMessage(incoming=True))
