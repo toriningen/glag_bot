@@ -43,7 +43,9 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
         glag_text = to_glag(orig_text)
 
         for chunk in split_long_text(glag_text):
-            await event.reply(chunk)
+            chunk = chunk.strip()
+            if chunk:
+                await event.reply(chunk)
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
