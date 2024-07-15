@@ -9,3 +9,6 @@ services:
       - type: volume
         source: sessions
         target: /var/run/sessions
+
+volumes:
+  sessions:
