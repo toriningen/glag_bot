@@ -88,7 +88,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
         return await event.answer([
             event.builder.article(
                 title=f'({len(orig_text)} | {len(glag_text)}) {ellipsis_truncate(glag_text, 100)}',
-                description=f"{hint}відправити транслітерацію в чат",
+                description=f"{hint}надіслати транслітерацію в чат",
                 text=glag_text,
             )
         ])
