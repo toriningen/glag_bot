@@ -72,8 +72,8 @@ def _get_unique_detectors(uniques: Mapping[str, Set[str]]) -> Mapping[str, Calla
     detectors = {}
 
     for lang, unique in uniques.items():
-        rx = _make_matcher(sorted(unique, key=lambda x: -len(x[0])))
-        detectors[lang] = lambda text: rx.search(text) is not None
+        _rx = _make_matcher(sorted(unique, key=lambda x: (-len(x[0]), x[0])))
+        detectors[lang] = lambda text, *, rx=_rx: rx.search(text) is not None
 
     return detectors
 
@@ -87,7 +87,13 @@ class Converter:
         self.unique_detectors = _get_unique_detectors(self.uniques)
 
     def convert(self, lang: str, text: str) -> str:
-        return self.converters[lang](text)
+        text = self.converters[lang](text)
+
+        for other_lang, converter in self.converters.items():
+            if lang != other_lang:
+                text = self.converters[other_lang](text)
+
+        return text
 
     def detect_lang(self, text: str) -> Set[str]:
         detected = set()
