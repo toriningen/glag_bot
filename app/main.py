@@ -48,8 +48,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
-        print(event, dir(event), event.__dict__)
-        logger.debug(f'Inline query') #, extra=log_event(event))
+        logger.debug(f'Inline query', extra={"event": repr([event, dir(event), event.__dict__])})
 
         orig_text = event.text
         glag_text = to_glag(orig_text)
