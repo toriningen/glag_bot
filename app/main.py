@@ -78,8 +78,6 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
         logger.debug(f'Inline query', extra=log_event(event.original_update))
 
         orig_text = event.text
-        glag_text = converter.convert('ukr', orig_text)
-
         if not orig_text:
             return await event.answer([])
 
