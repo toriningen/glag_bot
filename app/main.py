@@ -95,6 +95,8 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
             'isv': "меджусловјанскы",
         }
 
+        if not langs: langs = {'ukr', 'isv'}
+
         for lang, lang_name in langs.items():
             glag_text = converter.convert(lang, orig_text)
             options.append(event.builder.article(
