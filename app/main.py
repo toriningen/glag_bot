@@ -50,8 +50,8 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
         await event.answer([
             event.builder.article(
-                title=round_up(glag_text, 10000),
-                description="на глаголицю",
+                title=round_up(glag_text, 100),
+                description="відправити транслітерацію в чат",
                 text=glag_text,
             )
         ])
