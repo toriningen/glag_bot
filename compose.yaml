@@ -12,8 +12,8 @@ services:
     logging:
       driver: local
       options:
-        max-size: 100m
-        max-file: 1000
+        max-size: 10m
+        max-file: 10
         compress: "true"
 
 volumes:
