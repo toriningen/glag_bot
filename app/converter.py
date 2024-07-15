@@ -1,9 +1,11 @@
 import re
+from typing import List
 
 
-def build_converter(table: str):
-    lines = table.split('\n')
+def build_converter(tables: List[str]):
+    lines = [line for table in tables for line in table.splitlines()]
     rules = []
+
     for raw in lines:
         # remove trailing # comments
         line = re.sub(r'\s*#.*?$', r'', raw)
