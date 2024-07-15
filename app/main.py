@@ -25,7 +25,7 @@ def log_event(event):
 
 def make_bot(session: str, tables: List[str]) -> TelegramClient:
     to_glag = build_converter(tables)
-    bot = TelegramClient(session, api_id=API_ID, api_hash=API_HASH)
+    bot = TelegramClient(session, api_id=API_ID, api_hash=API_HASH, catch_up=True)
 
     @bot.on(events.NewMessage(incoming=True, pattern=r'^/start'))
     async def on_start(event):
