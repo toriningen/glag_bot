@@ -48,6 +48,16 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
             await event.answer([])
             return
 
+        if len(glag_text) > 4096:
+            await event.answer([
+                event.builder.article(
+                    title="Текст занадто довгий!",
+                    description="Обмеження - 4096 знаків",
+                    text='',
+                )
+            ])
+            return
+
         await event.answer([
             event.builder.article(
                 title=round_up(glag_text, 100),
