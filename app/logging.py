@@ -16,4 +16,4 @@ telethon_logger.setLevel(logging.INFO)
 
 
 def get_logger(*args, **kwargs):
-    logging.LoggerAdapter(logging.getLogger(*args, **kwargs), {'event': ''})
+    return logging.LoggerAdapter(logging.getLogger(*args, **kwargs), {'event': ''})
