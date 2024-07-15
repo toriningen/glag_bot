@@ -18,6 +18,10 @@ def ellipsis_truncate(text: str, max_len: int) -> str:
 
     return text
 
+def log_event(event):
+    return {
+        'event': event.to_json(ensure_ascii=False),
+    }
 
 def make_bot(session: str, tables: List[str]) -> TelegramClient:
     to_glag = build_converter(tables)
@@ -25,14 +29,14 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.NewMessage(incoming=True, pattern=r'^/start'))
     async def on_start(event):
-        logger.debug(f'Start message', extra={"event": event.to_json()})
+        logger.debug(f'Start message', extra=log_event(event))
 
         await event.reply(to_glag('Добродошли!'))
         raise events.StopPropagation()
 
     @bot.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
-        logger.debug(f'New message', extra={"event": event.to_json()})
+        logger.debug(f'New message', extra=log_event(event))
 
         orig_text = event.raw_text
         glag_text = to_glag(orig_text)
@@ -44,7 +48,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
-        logger.debug(f'Inline query', extra={"event": event.to_json()})
+        logger.debug(f'Inline query', extra=log_event(event))
 
         orig_text = event.text
         glag_text = to_glag(orig_text)
