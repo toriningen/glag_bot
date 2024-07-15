@@ -11,12 +11,15 @@ from .text_util import split_long_text
 
 logging.basicConfig(
     level=logging.getLevelName(LOG_LEVEL),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
+    format="%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s | %(event)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
         logging.StreamHandler()
-    ]
+    ],
 )
+
+telethon_logger = logging.getLogger('telethon')
+telethon_logger.setLevel(logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +42,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.NewMessage(incoming=True))
     async def on_new_message(event):
-        logger.debug(f'New message', extra={"event": event.to_dict()})
+        logger.info(f'New message', extra={"event": event.to_dict()})
         orig_text = event.raw_text
         glag_text = to_glag(orig_text)
 
@@ -50,7 +53,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
-        logger.debug(f'Inline query', extra={"event": event.to_dict()})
+        logger.info(f'Inline query', extra={"event": event.to_dict()})
         orig_text = event.text
         glag_text = to_glag(orig_text)
 
