@@ -42,23 +42,31 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
-        glag_text = to_glag(event.text)
+        orig_text = event.text
+        glag_text = to_glag(orig_text)
 
         if not glag_text:
-            await event.answer([])
-            return
+            return await event.answer([])
+
+        if len(orig_text) > 270:
+            return await event.answer([
+                event.builder.article(
+                    title='Ой вей, станеться обрізання',
+                    description='Не більше 270 знаків',
+                    text=glag_text,
+                )
+            ])
 
         if len(glag_text) > 4096:
-            await event.answer([
+            return await event.answer([
                 event.builder.article(
                     title="Текст занадто довгий!",
                     description="Обмеження - 4096 знаків",
                     text='',
                 )
             ])
-            return
 
-        await event.answer([
+        return await event.answer([
             event.builder.article(
                 title=round_up(glag_text, 100),
                 description="відправити транслітерацію в чат",
