@@ -57,7 +57,7 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
         hint = ''
         if len(orig_text) == 255:
-            hint = '(⚠️ можливо, текст занадто довгий - обмеження в 270 знаків) '
+            hint = '(⚠️ можливо, текст занадто довгий - є обмеження в 270 знаків) '
 
         return await event.answer([
             event.builder.article(
