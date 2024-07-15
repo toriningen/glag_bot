@@ -20,6 +20,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def round_up(text: str, max_len: int) -> str:
+    if len(text) > max_len:
+        return f'{text[:max_len - 3]}...'
+
+    return text
+
+
 def make_bot(session: str, tables: List[str]) -> TelegramClient:
     to_glag = build_converter(tables)
     bot = TelegramClient(session, api_id=API_ID, api_hash=API_HASH)
@@ -35,11 +42,14 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
+        src_text = event.text
+        glag_text = to_glag(event.text)
+
         await event.answer([
             event.builder.article(
-                title=f"title: {to_glag(event.text)}",
-                description="desc",
-                text=to_glag(event.text)
+                title=round_up(glag_text, 100),
+                description="Перекласти на глаголицю",
+                text=glag_text,
             )
         ])
 
