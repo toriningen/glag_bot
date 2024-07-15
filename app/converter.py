@@ -1,6 +1,8 @@
 import re
 from typing import List, Mapping, Callable, Tuple, Set
 
+from app.tables import UKR_TABLE, ISV_TABLE, NUMERALS_TABLE
+
 
 def _make_matcher(patterns: List[str]) -> re.Pattern[str]:
     return re.compile('|'.join(re.escape(pat) for pat in patterns))
@@ -79,12 +81,16 @@ def _get_unique_detectors(uniques: Mapping[str, Set[str]]) -> Mapping[str, Calla
 
 
 class Converter:
-    def __init__(self, tables: Mapping[str, str]):
-        self.tables = tables
-        self.rulesets = {lang: _table_to_ruleset(table) for lang, table in tables.items()}
+    def __init__(self):
+        self.tables = {
+            'ukr': UKR_TABLE,
+            'isv': ISV_TABLE,
+        }
+        self.rulesets = {lang: _table_to_ruleset(table) for lang, table in self.tables.items()}
         self.converters = {lang: _ruleset_to_converter(ruleset) for lang, ruleset in self.rulesets.items()}
         self.uniques = _get_unique_rules(self.rulesets)
         self.unique_detectors = _get_unique_detectors(self.uniques)
+        self.numeral_ruleset = dict(_table_to_ruleset(NUMERALS_TABLE))
 
     def convert(self, lang: str, text: str) -> str:
         text = self.converters[lang](text)
@@ -92,6 +98,8 @@ class Converter:
         for other_lang, converter in self.converters.items():
             if lang != other_lang:
                 text = self.converters[other_lang](text)
+
+        self.convert_numerals()
 
         return text
 
@@ -103,3 +111,29 @@ class Converter:
                 detected.add(lang)
 
         return detected
+
+    def convert_numerals(self, text: str) -> str:
+        return re.sub(r'(\d+)', lambda m: self._convert_numeral(m.group(1)), text)
+
+    def _convert_numeral(self, digits: str):
+        num = int(digits)
+        if num >= 10_000 or num == 0:
+            return digits
+
+        converted = []
+        for offset, digit in enumerate(digits):
+            if digit == '0':
+                continue
+
+            offset = len(digits) - offset - 1
+            key = f'{digit}{'0' * offset}'
+            converted.append(self.numeral_ruleset[key])
+
+        if 11 <= (num % 100) <= 19:
+            converted[-2:] = reversed(converted[-2:])
+
+        converted[(len(converted) - 1) // 2] += '҃'
+        converted = ''.join(converted)
+        converted = f'·{converted}·'
+
+        return converted

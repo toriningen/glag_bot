@@ -26,7 +26,7 @@ def log_event(event):
 
 
 def make_bot(session: str) -> TelegramClient:
-    converter = Converter({'ukr': UKR_TABLE, 'isv': ISV_TABLE})
+    converter = Converter()
     from_ukr = lambda text: converter.convert('ukr', text)
     from_isv = lambda text: converter.convert('isv', text)
 
@@ -64,8 +64,8 @@ def make_bot(session: str) -> TelegramClient:
 
         # TODO: only show languages for unique candidates... but since we have just two languages yet, no point :D
         candidates = {
-            from_isv(from_ukr(orig_text)),
-            from_ukr(from_isv(orig_text)),
+            from_ukr(orig_text),
+            from_isv(orig_text),
         }
 
         if len(candidates) == 1:
@@ -81,6 +81,7 @@ def make_bot(session: str) -> TelegramClient:
         if chat_id in pending_messages:
             _, lang_event = pending_messages[chat_id]
             await lang_event.delete()
+            del pending_messages[chat_id]
 
         lang_event = await event.reply("⚠️ Якою це мовою?", buttons=[
             [Button.inline(lang_name, lang) for lang, lang_name in lang_names.items()]
@@ -92,8 +93,10 @@ def make_bot(session: str) -> TelegramClient:
         logger.debug(f'New callback query', extra=log_event(event.original_update))
         lang = event.data.decode('utf8')
         chat_id = event.chat_id
-        await handle_message_with_known_lang(lang, pending_messages[chat_id][0])
-        await event.delete()
+        if chat_id in pending_messages:
+            await handle_message_with_known_lang(lang, pending_messages[chat_id][0])
+            await event.delete()
+            del pending_messages[chat_id]
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
