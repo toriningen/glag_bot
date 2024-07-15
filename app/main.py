@@ -42,13 +42,16 @@ def make_bot(session: str, tables: List[str]) -> TelegramClient:
 
     @bot.on(events.InlineQuery())
     async def inline_handler(event):
-        src_text = event.text
         glag_text = to_glag(event.text)
+
+        if not glag_text:
+            await event.answer([])
+            return
 
         await event.answer([
             event.builder.article(
-                title=round_up(glag_text, 100),
-                description="Перекласти на глаголицю",
+                title=round_up(glag_text, 10000),
+                description="на глаголицю",
                 text=glag_text,
             )
         ])
