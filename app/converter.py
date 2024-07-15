@@ -99,7 +99,7 @@ class Converter:
             if lang != other_lang:
                 text = self.converters[other_lang](text)
 
-        self.convert_numerals()
+        text = self.convert_numerals(text)
 
         return text
 
